@@ -1,9 +1,27 @@
 import requests
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
-
+import os 
 class funciones:
-    def Valor_compra():
+    def ultima_actualizacion():
+        url = "https://api.bluelytics.com.ar/v2/latest"
+
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+
+            json_data = response.json()
+
+            # Acceder al valor de las variables
+            ultima_actualizacion = json_data['last_update']
+            ultima_actualizacion = datetime.fromisoformat(ultima_actualizacion)
+            ultima_actualizacion = ultima_actualizacion.strftime("%Y %m %d %H:%M")
+            return ultima_actualizacion
+
+        except requests.exceptions.RequestException as e:
+            print("Error al realizar la solicitud:", e)
+
+    def Valor_promedio():
         url = "https://api.bluelytics.com.ar/v2/latest"
 
         try:
@@ -36,7 +54,7 @@ class funciones:
         except requests.exceptions.RequestException as e:
             print("Error al realizar la solicitud:", e)
 
-    def Valor_promedio():
+    def Valor_compra():
         url = "https://api.bluelytics.com.ar/v2/latest"
 
         try:
@@ -107,9 +125,10 @@ class funciones:
             axs[1].grid(True)
 
             plt.tight_layout()
-
             #ruta de guardado
             ruta_guardado = "graficos_saves/"
+            if not os.path.exists(ruta_guardado):
+                os.makedirs(ruta_guardado)
             #obtener fecha actual
             fecha_actual = datetime.now()
             nombre_archivo = fecha_actual.strftime('%Y-%m-%d_%H-%M-%S.png')
